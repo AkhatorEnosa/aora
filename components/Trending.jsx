@@ -1,5 +1,4 @@
-import { useCallback, useRef, useState } from "react";
-import * as Animatable from "react-native-animatable";
+import { useState } from "react";
 import { ResizeMode, Video } from "expo-av";
 import {
   Alert,

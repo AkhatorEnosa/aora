@@ -34,21 +34,17 @@ const RootLayout = () => {
     <GlobalProvider>
       <Stack>
         <Stack.Screen name='index' options={{
-          title: "Home",
           headerShown: false
         }}/>
         <Stack.Screen name='(auth)' options={{
-          title: "Home",
           headerShown: false
         }}/>
         <Stack.Screen name='(tabs)' options={{
-          title: "Home",
           headerShown: false
         }}/>
-        {/* <Stack.Screen name='/search/[query]' options={{
-          title: "Home",
+        <Stack.Screen name='search/[query]' options={{
           headerShown: false
-        }}/> */}
+        }}/>
       </Stack>
     </GlobalProvider>
   )

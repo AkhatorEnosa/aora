@@ -1,12 +1,14 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-import { icons } from '../constants'
+import { useState } from "react";
+import { ResizeMode, Video } from "expo-av";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 
-const VideoCard = ({ video: { title, thumbnail, video, creator: { username, avatar } } }) => {
-    const [play, setPlay] = useState(false)
+import { icons } from "../constants";
+
+const VideoCard = ({ title, creator, avatar, thumbnail, video }) => {
+  const [play, setPlay] = useState(false);
 
   return (
-    <View className="flex-col items-center px-4 mb-14">
+    <View className="flex flex-col items-center px-4 mb-14">
       <View className="flex flex-row gap-3 items-start">
         <View className="flex justify-center items-center flex-row flex-1">
           <View className="w-[46px] h-[46px] rounded-lg border border-secondary flex justify-center items-center p-0.5">
@@ -28,7 +30,7 @@ const VideoCard = ({ video: { title, thumbnail, video, creator: { username, avat
               className="text-xs text-gray-100 font-pregular"
               numberOfLines={1}
             >
-              {username}
+              {creator}
             </Text>
           </View>
         </View>
@@ -39,19 +41,25 @@ const VideoCard = ({ video: { title, thumbnail, video, creator: { username, avat
       </View>
 
       {play ? (
-        <Text>Playing</Text>
-        // <Video
-        //   source={{ uri: video }}
-        //   className="w-full h-60 rounded-xl mt-3"
-        //   resizeMode={ResizeMode.CONTAIN}
-        //   useNativeControls
-        //   shouldPlay
-        //   onPlaybackStatusUpdate={(status) => {
-        //     if (status.didJustFinish) {
-        //       setPlay(false);
-        //     }
-        //   }}
-        // />
+        <Video
+          source={{ 
+            uri: "https://www.w3schools.com/tags/mov_bbb.mp4"
+          }}
+          style={{
+            width: '100%',
+            height: 240,
+            borderRadius: 12,
+            marginRight: 12,
+          }}
+          resizeMode={ResizeMode.COVER}
+          useNativeControls
+          shouldPlay
+          onPlaybackStatusUpdate={(status) => {
+            if (status.didJustFinish) {
+              setPlay(false);
+            }
+          }}
+        />
       ) : (
         <TouchableOpacity
           activeOpacity={0.7}
@@ -72,7 +80,7 @@ const VideoCard = ({ video: { title, thumbnail, video, creator: { username, avat
         </TouchableOpacity>
       )}
     </View>
-  )
-}
+  );
+};
 
-export default VideoCard
+export default VideoCard;
