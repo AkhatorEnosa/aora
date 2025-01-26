@@ -22,9 +22,9 @@ const Profile = () => {
     router.replace('/sign-in')
   }
 
-  useEffect(() => {
-    if(user === null && !isLoading && !isLoggedIn) router.replace('/sign-in')
-  })
+  // useEffect(() => {
+  //   if(user === null && !isLoading && !isLoggedIn) router.replace('/sign-in')
+  // })
 
   return (
     <SafeAreaView className="bg-primary h-full">
