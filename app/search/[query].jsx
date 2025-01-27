@@ -7,10 +7,13 @@ import { searchPosts } from "../../lib/appwrite.config";
 import VideoCard from "../../components/VideoCard";
 import SearchInput from "../../components/SearchInput";
 import EmptyState from "../../components/EmptyState";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Search = () => {
   const { query } = useLocalSearchParams();
   const { data: posts, refetch } = useAppwrite(() => searchPosts(query));
+
+  const { user, bookmarks } = useGlobalContext()
 
   useEffect(() => {
     refetch();
@@ -28,6 +31,9 @@ const Search = () => {
             video={item.video}
             creator={item.creator.username}
             avatar={item.creator.avatar}
+            bookmarks={bookmarks}
+            postId={item.$id}
+            userId={user.$id}
           />
         )}
         ListHeaderComponent={() => (

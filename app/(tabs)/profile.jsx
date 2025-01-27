@@ -11,7 +11,7 @@ import { icons } from "../../constants";
 import { router } from "expo-router";
 
 const Profile = () => {
-  const { user, setUser, setIsLoggedIn, isLoading, isLoggedIn } = useGlobalContext()
+  const { user, setUser, bookmarks, setIsLoggedIn, isLoading, isLoggedIn } = useGlobalContext()
   const { data: posts } = useAppwrite(() => getUserPosts(user?.$id));
 
   const logout = async() => {
@@ -38,6 +38,9 @@ const Profile = () => {
             video={item.video}
             creator={item.creator.username}
             avatar={item.creator.avatar}
+            bookmarks={bookmarks}
+            postId={item.$id}
+            userId={user.$id}
           />
         )}
         ListHeaderComponent={() => (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ResizeMode, Video } from "expo-av";
 import {
   Alert,
@@ -31,6 +31,7 @@ import { icons } from "../constants";
 
 const TrendingItem = ({ activeItem, item }) => {
   const [play, setPlay] = useState(false);
+  const videoPlayer = useRef(null)
 
   return (
     <View
@@ -47,8 +48,10 @@ const TrendingItem = ({ activeItem, item }) => {
     >
       {play ? (
         <Video
+          ref={videoPlayer}
           source={{ 
             uri: "https://www.w3schools.com/tags/mov_bbb.mp4"
+            // uri: item.video
           }}
           style={{
             width: 208,
@@ -60,9 +63,17 @@ const TrendingItem = ({ activeItem, item }) => {
           useNativeControls
           shouldPlay
           onPlaybackStatusUpdate={(status) => {
-            if (status.didJustFinish) {
-              setPlay(false);
-            }
+
+            // if (status.isPlaying) {
+            //   // setPlay(false);
+            //   videoPlayer.current?.presentFullscreenPlayer();
+            // } 
+            
+            // if(!status.isPlaying){
+            //   videoPlayer.current?.dismissFullscreenPlayer();
+            // }
+
+            if(status.didJustFinish) setPlay(false)
           }}
           onError={(error) => Alert.alert('Error', error)}
         />

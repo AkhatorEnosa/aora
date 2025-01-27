@@ -1,11 +1,27 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ResizeMode, Video } from "expo-av";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 
 import { icons } from "../constants";
+import { addBookmark } from "../lib/appwrite.config";
 
-const VideoCard = ({ title, creator, avatar, thumbnail, video }) => {
+const VideoCard = ({ title, creator, avatar, thumbnail, video, bookmarks, postId, userId }) => {
   const [play, setPlay] = useState(false);
+  const videoPlayer = useRef(null)
+
+  const findBookmark = bookmarks.find((bookmark) => bookmark.$id === postId)
+
+  const handleAddBookmark = async() => {
+    console.log("Pressed")
+      try {
+        await addBookmark(postId, userId)
+
+        Alert.alert("Success", "Bookmarked");
+      } catch (error) {
+        Alert.alert("Error", error.message);
+      }
+  }
+  
 
   return (
     <View className="flex flex-col items-center px-4 mb-14">
@@ -35,13 +51,14 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video }) => {
           </View>
         </View>
 
-        <View className="pt-2">
-          <Image source={icons.menu} className="w-5 h-5" resizeMode="contain" />
-        </View>
+        <TouchableOpacity className="p-5 rounded-full bg-black/20" onPress={() => handleAddBookmark()}>
+          <Image source={findBookmark ? icons.bookmarked : icons.bookmark} className="w-5 h-5" resizeMode="contain" />
+        </TouchableOpacity>
       </View>
 
       {play ? (
         <Video
+          ref={videoPlayer}
           source={{ 
             uri: "https://www.w3schools.com/tags/mov_bbb.mp4"
           }}
@@ -57,7 +74,11 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video }) => {
           onPlaybackStatusUpdate={(status) => {
             if (status.didJustFinish) {
               setPlay(false);
-            }
+              // videoPlayer.current?.dismissFullscreenPlayer();
+            } 
+            // else {
+            //   videoPlayer.current?.presentFullscreenPlayer();
+            // }
           }}
         />
       ) : (

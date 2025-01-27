@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getCurrUser } from "../lib/appwrite.config";
+import { getCurrUser, getUserBookmarks } from "../lib/appwrite.config";
 
 const GlobalContext = createContext()
 export const useGlobalContext = () => useContext(GlobalContext)
@@ -7,6 +7,7 @@ export const useGlobalContext = () => useContext(GlobalContext)
 export const GlobalProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [user, setUser] = useState(null)
+    const [bookmarks, setBookmarks] = useState([])
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
@@ -25,6 +26,20 @@ export const GlobalProvider = ({ children }) => {
             setIsLoading(false)
         })
     }, [])
+
+    useEffect(() => {
+        getUserBookmarks(user?.$id).then((res) => {
+            if(res) {
+                setBookmarks(res)
+            } else {
+                setBookmarks(null)
+            }
+        }).catch((error) => {
+            console.log(error)
+        }).finally(() => {
+            setIsLoading(false)
+        })
+    }, [user])
     
 
     return (
@@ -34,6 +49,7 @@ export const GlobalProvider = ({ children }) => {
                 setIsLoggedIn,
                 user,
                 setUser,
+                bookmarks,
                 isLoading
             }}
         >

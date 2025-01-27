@@ -15,7 +15,9 @@ import { router } from 'expo-router'
 const Home = () => {
   const { data: posts, refetch } = useAppwrite(getAllPosts)
   const { data: latestPosts } = useAppwrite(getLatestPosts)
-  const { user, isLoading, isLoggedIn } = useGlobalContext()
+  const { user, bookmarks, isLoading, isLoggedIn } = useGlobalContext()
+
+  // console.log("bookmarks", bookmarks)
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -41,6 +43,9 @@ const Home = () => {
             video={item.video}
             creator={item.creator.username}
             avatar={item.creator.avatar}
+            bookmarks={bookmarks}
+            postId={item.$id}
+            userId={user.$id}
           />
         )}
         ListHeaderComponent={() => (
