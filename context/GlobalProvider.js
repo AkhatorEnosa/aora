@@ -39,7 +39,7 @@ export const GlobalProvider = ({ children }) => {
         }).finally(() => {
             setIsLoading(false)
         })
-    }, [user])
+    }, [user, bookmarks])
     
 
     return (

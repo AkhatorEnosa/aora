@@ -1,22 +1,31 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ResizeMode, Video } from "expo-av";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 
 import { icons } from "../constants";
-import { addBookmark } from "../lib/appwrite.config";
+import { deletePost, getAllPosts, toggleBookmark } from "../lib/appwrite.config";
+import useAppwrite from "../lib/useAppwrite";
 
-const VideoCard = ({ title, creator, avatar, thumbnail, video, bookmarks, postId, userId }) => {
+const VideoCard = ({ title, creator, avatar, thumbnail, video, bookmarks, postId, userId, postUid }) => {
+  const { refetch } = useAppwrite(getAllPosts)
   const [play, setPlay] = useState(false);
   const videoPlayer = useRef(null)
 
   const findBookmark = bookmarks.find((bookmark) => bookmark.$id === postId)
 
   const handleAddBookmark = async() => {
-    console.log("Pressed")
       try {
-        await addBookmark(postId, userId)
+        await toggleBookmark(postId, userId)
+      } catch (error) {
+        Alert.alert("Error", error.message);
+      }
+  }
+  
 
-        Alert.alert("Success", "Bookmarked");
+  const handleDeletePost = async() => {
+      try {
+        await deletePost(postId)
+        refetch();
       } catch (error) {
         Alert.alert("Error", error.message);
       }
@@ -51,9 +60,18 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video, bookmarks, postId
           </View>
         </View>
 
-        <TouchableOpacity className="p-5 rounded-full bg-black/20" onPress={() => handleAddBookmark()}>
-          <Image source={findBookmark ? icons.bookmarked : icons.bookmark} className="w-5 h-5" resizeMode="contain" />
-        </TouchableOpacity>
+        <View className="flex-row justify-center items-center gap-3">
+          <TouchableOpacity className="p-5 rounded-full bg-black/20" onPress={() => handleAddBookmark()}>
+            <Image source={findBookmark ? icons.bookmarked : icons.bookmark} className="w-5 h-5" resizeMode="contain" />
+          </TouchableOpacity>
+
+          {userId === postUid && 
+            <TouchableOpacity className="p-5 rounded-lg bg-red-600/50" onPress={() => handleDeletePost()}>
+              <Text  className="font-psemibold text-sm text-white">Delete</Text>
+            </TouchableOpacity>
+          }
+        </View>
+
       </View>
 
       {play ? (
@@ -66,7 +84,7 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video, bookmarks, postId
             width: '100%',
             height: 240,
             borderRadius: 12,
-            marginRight: 12,
+            marginTop: 12
           }}
           resizeMode={ResizeMode.COVER}
           useNativeControls

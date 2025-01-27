@@ -41,6 +41,7 @@ const Profile = () => {
             bookmarks={bookmarks}
             postId={item.$id}
             userId={user.$id}
+            postUid={item.creator.$id}
           />
         )}
         ListHeaderComponent={() => (

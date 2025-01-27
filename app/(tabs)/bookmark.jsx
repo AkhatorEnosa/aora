@@ -27,6 +27,7 @@ const Bookmark = () => {
             avatar={item.creator.avatar}
             bookmarks={bookmarks}
             postId={item.$id}
+            postUid={item.creator.$id}
           />
         )}
         ListHeaderComponent={() => (
