@@ -27,10 +27,6 @@ const Home = () => {
     setRefreshing(false);
   };
 
-  useEffect(() => {
-    refetch()
-  }, [posts])
-
   // useEffect(() => {
   //   if(user === null && !isLoading && !isLoggedIn) router.replace('/sign-in')
   // })
@@ -49,7 +45,7 @@ const Home = () => {
             avatar={item.creator.avatar}
             bookmarks={bookmarks}
             postId={item.$id}
-            userId={user.$id}
+            userId={user?.$id}
             postUid={item.creator.$id}
           />
         )}

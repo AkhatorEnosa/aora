@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { getCurrUser, getUserBookmarks } from "../lib/appwrite.config";
 
 const GlobalContext = createContext()
@@ -27,19 +27,23 @@ export const GlobalProvider = ({ children }) => {
         })
     }, [])
 
-    useEffect(() => {
-        getUserBookmarks(user?.$id).then((res) => {
-            if(res) {
-                setBookmarks(res)
-            } else {
-                setBookmarks(null)
-            }
-        }).catch((error) => {
-            console.log(error)
-        }).finally(() => {
-            setIsLoading(false)
-        })
-    }, [user, bookmarks])
+    useMemo(() => {
+        if(user){
+            
+            getUserBookmarks(user?.$id).then((res) => {
+                if(res) {
+                    setBookmarks(res)
+                } else {
+                    setBookmarks(null)
+                }
+            }).catch((error) => {
+                console.log(error)
+            }).finally(() => {
+                setIsLoading(false)
+            })
+
+        }
+    }, [bookmarks])
     
 
     return (

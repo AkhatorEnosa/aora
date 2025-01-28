@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { ResizeMode, Video } from "expo-av";
 import {
   Alert,
@@ -31,7 +31,6 @@ import { icons } from "../constants";
 
 const TrendingItem = ({ activeItem, item }) => {
   const [play, setPlay] = useState(false);
-  const videoPlayer = useRef(null)
 
   return (
     <View
@@ -48,7 +47,6 @@ const TrendingItem = ({ activeItem, item }) => {
     >
       {play ? (
         <Video
-          ref={videoPlayer}
           source={{ 
             uri: "https://www.w3schools.com/tags/mov_bbb.mp4"
             // uri: item.video
