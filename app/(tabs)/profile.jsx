@@ -11,8 +11,13 @@ import { icons } from "../../constants";
 import { router } from "expo-router";
 
 const Profile = () => {
-  const { user, setUser, bookmarks, setIsLoggedIn, isLoading, isLoggedIn } = useGlobalContext()
-  const { data: posts } = useAppwrite(() => getUserPosts(user?.$id));
+  const { user, setUser, setIsLoggedIn } = useGlobalContext()
+  const { data: posts, refetch } = useAppwrite(() => getUserPosts(user?.$id));
+
+  useEffect(() => {
+    // refreshBookmarks()
+    refetch()
+  }, [user])
 
   const logout = async() => {
     await signOut()
@@ -27,10 +32,11 @@ const Profile = () => {
   // })
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-primary h-full max-w-[1240px] md:px-20">
       <FlatList
         data={posts}
         keyExtractor={(item) => item.$id}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <VideoCard
             title={item.title}
@@ -38,7 +44,6 @@ const Profile = () => {
             video={item.video}
             creator={item.creator.username}
             avatar={item.creator.avatar}
-            bookmarks={bookmarks}
             postId={item.$id}
             userId={user.$id}
             postUid={item.creator.$id}

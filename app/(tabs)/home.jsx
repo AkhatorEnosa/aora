@@ -1,5 +1,5 @@
 import { View, Text, FlatList, Image, RefreshControl } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { images } from '../../constants'
@@ -14,9 +14,8 @@ import { router } from 'expo-router'
 
 const Home = () => {
   const { data: posts, refetch } = useAppwrite(getAllPosts)
-  const { data: latestPosts } = useAppwrite(getLatestPosts)
-  const { user, bookmarks, isLoading, isLoggedIn } = useGlobalContext()
-
+  const { data: latestPosts, refetch: fetch } = useAppwrite(getLatestPosts)
+  const { user } = useGlobalContext()
   // console.log("bookmarks", bookmarks)
 
   const [refreshing, setRefreshing] = useState(false);
@@ -24,6 +23,7 @@ const Home = () => {
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch();
+    await fetch();
     setRefreshing(false);
   };
 
@@ -32,10 +32,11 @@ const Home = () => {
   // })
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-primary h-full max-w-[1240px] md:px-20">
       <FlatList 
         data={posts}
         keyExtractor={(item) => item.$id}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <VideoCard
             title={item.title}
@@ -43,8 +44,8 @@ const Home = () => {
             video={item.video}
             creator={item.creator.username}
             avatar={item.creator.avatar}
-            bookmarks={bookmarks}
             postId={item.$id}
+            postFilesIds={item.fileIds}
             userId={user?.$id}
             postUid={item.creator.$id}
           />

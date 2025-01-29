@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ResizeMode, Video } from "expo-av";
 import {
   Alert,
@@ -10,6 +10,8 @@ import {
 } from "react-native";
 
 import { icons } from "../constants";
+import { getLatestPosts } from "../lib/appwrite.config";
+import useAppwrite from "../lib/useAppwrite";
 
 // const zoomIn = {
 //   0: {
@@ -31,6 +33,11 @@ import { icons } from "../constants";
 
 const TrendingItem = ({ activeItem, item }) => {
   const [play, setPlay] = useState(false);
+  // const { refetch } = useAppwrite(getLatestPosts)
+
+  // useEffect(() => {
+  //   refetch()
+  // }, [])
 
   return (
     <View

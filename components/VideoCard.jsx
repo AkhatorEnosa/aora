@@ -5,17 +5,21 @@ import { View, Text, TouchableOpacity, Image } from "react-native";
 import { icons } from "../constants";
 import { deletePost, getAllPosts, toggleBookmark } from "../lib/appwrite.config";
 import useAppwrite from "../lib/useAppwrite";
+import { useGlobalContext } from "../context/GlobalProvider";
 
-const VideoCard = ({ title, creator, avatar, thumbnail, video, bookmarks, postId, userId, postUid }) => {
+const VideoCard = ({ title, creator, avatar, thumbnail, video, postId, postFilesIds, userId, postUid }) => {
   const { refetch } = useAppwrite(getAllPosts)
   const [play, setPlay] = useState(false);
   const videoPlayer = useRef(null)
+
+  const { bookmarks, refreshBookmarks } = useGlobalContext()
 
   const findBookmark = bookmarks.find((bookmark) => bookmark.$id === postId)
 
   const handleAddBookmark = async() => {
       try {
         await toggleBookmark(postId, userId)
+        await refreshBookmarks()
       } catch (error) {
         Alert.alert("Error", error.message);
       }
@@ -24,8 +28,11 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video, bookmarks, postId
 
   const handleDeletePost = async() => {
       try {
-        await deletePost(postId)
-        refetch();
+        await deletePost(postId, postFilesIds)
+        await refetch();
+        await refreshBookmarks();
+
+        console.log("Refetched and refreshed bookmarks")
       } catch (error) {
         Alert.alert("Error", error.message);
       }
@@ -103,7 +110,7 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video, bookmarks, postId
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => setPlay(true)}
-          className="w-full h-60 rounded-xl mt-3 relative flex justify-center items-center"
+          className="w-full h-60 md:h-96 rounded-xl mt-3 relative flex justify-center items-center"
         >
           <Image
             source={{ uri: thumbnail }}

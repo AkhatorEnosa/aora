@@ -10,14 +10,20 @@ import EmptyState from "../../components/EmptyState";
 import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Bookmark = () => {
-  const { user, setUser, bookmarks, setIsLoggedIn, isLoading, isLoggedIn } = useGlobalContext()
-  const { data: posts } = useAppwrite(() => getUserBookmarks(user.$id));
+  const { user, bookmarks, refreshBookmarks } = useGlobalContext()
+  // const { refetch } = useAppwrite(() => getUserBookmarks(user.$id));
+
+  useEffect(() => {
+    refreshBookmarks()
+    // refetch()
+  }, [])
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-primary h-full max-w-[1240px] md:px-20">
       <FlatList
-        data={posts}
+        data={bookmarks}
         keyExtractor={(item) => item.$id}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <VideoCard
             title={item.title}
@@ -25,8 +31,8 @@ const Bookmark = () => {
             video={item.video}
             creator={item.creator.username}
             avatar={item.creator.avatar}
-            bookmarks={bookmarks}
             postId={item.$id}
+            userId={user?.$id}
             postUid={item.creator.$id}
           />
         )}

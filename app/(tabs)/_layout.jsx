@@ -3,7 +3,7 @@ import { Tabs, Redirect } from 'expo-router'
 import { icons } from "../../constants"
 import { StatusBar } from 'expo-status-bar'
 
-const TabIcon = ({ icon, color, name, focused }) => {
+const TabIcon = ({ icon, color, name }) => {
     return (
         <View className="w-fit h-fit justify-center items-center gap-2">
             <Image 
