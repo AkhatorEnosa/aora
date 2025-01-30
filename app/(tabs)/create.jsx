@@ -6,12 +6,14 @@ import FormField from '../../components/FormField'
 import CustomButton from '../../components/CustomButton'
 import { ResizeMode, Video } from 'expo-av'
 import * as DocumentPicker from "expo-document-picker";
-import { createVideoPost } from '../../lib/appwrite.config'
+import { createVideoPost, getAllPosts } from '../../lib/appwrite.config'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import { router } from 'expo-router'
+import useAppwrite from '../../lib/useAppwrite'
 
 const Create = () => {
   const { user } = useGlobalContext()
+  const { refetch } = useAppwrite(getAllPosts)
   const [uploading, setUploading] = useState(false)
   const [form, setForm] = useState({
     title: '',
@@ -75,6 +77,7 @@ const Create = () => {
 
       Alert.alert("Success", "Post uploaded successfully");
       router.push("/home");
+      refetch()
     } catch (error) {
       Alert.alert("Error", error.message);
     } finally {
