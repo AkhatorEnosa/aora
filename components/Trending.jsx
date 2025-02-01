@@ -1,46 +1,32 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ResizeMode, Video } from "expo-av";
+import * as Animatable from "react-native-animatable";
 import {
-  Alert,
   FlatList,
   Image,
   ImageBackground,
+  Text,
   TouchableOpacity,
   View,
 } from "react-native";
 
 import { icons } from "../constants";
-import { getLatestPosts } from "../lib/appwrite.config";
-import useAppwrite from "../lib/useAppwrite";
 
-// const zoomIn = {
-//   0: {
-//     scale: 0.9,
-//   },
-//   1: {
-//     scale: 1,
-//   },
-// };
-
-// const zoomOut = {
-//   0: {
-//     scale: 1,
-//   },
-//   1: {
-//     scale: 0.9,
-//   },
-// };
+const zoomIn = {
+  0: {
+    scale: 0.9,
+  },
+  1: {
+    scale: 1,
+  },
+};
 
 const TrendingItem = ({ activeItem, item }) => {
   const [play, setPlay] = useState(false);
-  // const { refetch } = useAppwrite(getLatestPosts)
-
-  // useEffect(() => {
-  //   refetch()
-  // }, [])
+  const [error, setError] = useState(false);
 
   return (
-    <View
+    <Animatable.View
           style={{
             width: 208,
             height: 288,
@@ -48,15 +34,15 @@ const TrendingItem = ({ activeItem, item }) => {
             marginRight: 20,
             backgroundColor: "#000",
           }}
-      // animation={activeItem === item.$id ? zoomIn : zoomOut}
+      animation={activeItem === item.$id && zoomIn }
       // animation={ZoomInDown}
-      // duration={500}
+      duration={500}
     >
       {play ? (
         <Video
           source={{ 
-            uri: "https://www.w3schools.com/tags/mov_bbb.mp4"
-            // uri: item.video
+            uri: item.video
+            // uri: "https://www.w3schools.com/tags/mov_bbb.mp4"
           }}
           style={{
             width: 208,
@@ -80,8 +66,21 @@ const TrendingItem = ({ activeItem, item }) => {
 
             if(status.didJustFinish) setPlay(false)
           }}
-          onError={(error) => Alert.alert('Error', error)}
+          onError={(error) => {
+            if(error) {
+              setPlay(false)
+              setError(true)
+              
+              setTimeout(() => {
+                setError(false)
+              }, 2000);
+            }
+          }}
         />
+      ) : error ? (
+        <View className="relative flex-1 justify-center items-center bg-black">
+          <Text className="text-gray-100 font-pmedium text-sm">Cannot play this video.</Text>
+        </View>
       ) : (
         <TouchableOpacity
           className="relative flex-1 justify-center items-center "
@@ -111,12 +110,18 @@ const TrendingItem = ({ activeItem, item }) => {
           />
         </TouchableOpacity>
       )}
-    </View>
+    </Animatable.View>
   );
 };
 
 const Trending = ({ posts }) => {
   const [activeItem, setActiveItem] = useState(posts[0]);
+
+   const viewableItemsChanged = ({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      setActiveItem(viewableItems[0].key);
+    }
+  };
 
   return (
     <FlatList
@@ -126,6 +131,11 @@ const Trending = ({ posts }) => {
       renderItem={({ item }) => (
         <TrendingItem activeItem={activeItem} item={item} />
       )}
+      onViewableItemsChanged={viewableItemsChanged}
+      viewabilityConfig={{
+        itemVisiblePercentThreshold: 70,
+      }}
+      contentOffset={{ x: 0 }}
     />
   );
 };

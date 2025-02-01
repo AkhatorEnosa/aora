@@ -1,18 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ResizeMode, Video } from "expo-av";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 
 import { icons } from "../constants";
-import { deletePost, getAllPosts, toggleBookmark } from "../lib/appwrite.config";
-import useAppwrite from "../lib/useAppwrite";
+import { deletePost, toggleBookmark } from "../lib/appwrite.config";
 import { useGlobalContext } from "../context/GlobalProvider";
+import ActionModal from "./ActionModal";
 
 const VideoCard = ({ title, creator, avatar, thumbnail, video, postId, postFilesIds, userId, postUid }) => {
-  const { refetch } = useAppwrite(getAllPosts)
   const [play, setPlay] = useState(false);
+  const [error, setError] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false)
   const videoPlayer = useRef(null)
 
-  const { bookmarks, refreshBookmarks } = useGlobalContext()
+  const { bookmarks, refreshBookmarks, deleting, setDeleting } = useGlobalContext()
 
   const findBookmark = bookmarks.find((bookmark) => bookmark.$id === postId)
 
@@ -24,20 +25,17 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video, postId, postFiles
         Alert.alert("Error", error.message);
       }
   }
-  
 
   const handleDeletePost = async() => {
+    setDeleting(true)
       try {
         await deletePost(postId, postFilesIds)
-        await refetch();
-        await refreshBookmarks();
-
-        console.log("Refetched and refreshed bookmarks")
       } catch (error) {
         Alert.alert("Error", error.message);
+      } finally {
+        setDeleting(false)
       }
   }
-  
 
   return (
     <View className="flex flex-col items-center px-4 mb-14">
@@ -73,19 +71,32 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video, postId, postFiles
           </TouchableOpacity>
 
           {userId === postUid && 
-            <TouchableOpacity className="p-5 rounded-lg bg-red-600/50" onPress={() => handleDeletePost()}>
-              <Text  className="font-psemibold text-sm text-white">Delete</Text>
+            <TouchableOpacity className="p-5 rounded-full bg-red-600/20" onPress={() => setModalVisible(!modalVisible)}>
+              {/* <Text  className="font-psemibold text-sm text-white">Delete</Text> */}
+              <Image source={icons.cancel} className="w-5 h-5" resizeMode="contain" />
             </TouchableOpacity>
           }
         </View>
 
       </View>
 
+      {/* Modal  */}
+
+      {
+        modalVisible && 
+          <ActionModal 
+            modalVisible={modalVisible} 
+            handleVisible={() => !deleting && setModalVisible(!modalVisible)} 
+            handleDelete={() => handleDeletePost()}
+            deleting={deleting}
+          />
+      }
+
       {play ? (
         <Video
           ref={videoPlayer}
           source={{ 
-            uri: "https://www.w3schools.com/tags/mov_bbb.mp4"
+            uri: video
           }}
           style={{
             width: '100%',
@@ -105,7 +116,21 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video, postId, postFiles
             //   videoPlayer.current?.presentFullscreenPlayer();
             // }
           }}
+          onError={(error) => {
+            if(error) {
+              setPlay(false)
+              setError(true)
+              
+              setTimeout(() => {
+                setError(false)
+              }, 2000);
+            }
+          }}
         />
+      ) : error ? (
+        <View className="w-full h-60 md:h-96 rounded-xl mt-3 relative flex justify-center items-center bg-black">
+          <Text className="text-gray-100 font-psemibold">Cannot play this video.</Text>
+        </View>
       ) : (
         <TouchableOpacity
           activeOpacity={0.7}
@@ -118,11 +143,16 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video, postId, postFiles
             resizeMode="cover"
           />
 
-          <Image
-            source={icons.play}
-            className="w-12 h-12 absolute"
-            resizeMode="contain"
-          />
+          {deleting ? 
+            <View className="w-full h-60 md:h-96 rounded-xl mt-3 flex justify-center items-center bg-primary/50 absolute">
+              <Text className="text-gray-100 text-xl font-psemibold">Deleting...</Text>
+            </View> :
+            <Image
+              source={icons.play}
+              className="w-12 h-12 absolute"
+              resizeMode="contain"
+            />
+          }
         </TouchableOpacity>
       )}
     </View>

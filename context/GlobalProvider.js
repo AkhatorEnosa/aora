@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getCurrUser, getUserBookmarks } from "../lib/appwrite.config";
+import {  getCurrUser, getUserBookmarks } from "../lib/appwrite.config";
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -9,6 +9,8 @@ export const GlobalProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [bookmarks, setBookmarks] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [deleting, setDeleting] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     // Fetch current user on mount
     useEffect(() => {
@@ -51,7 +53,9 @@ export const GlobalProvider = ({ children }) => {
     // Fetch bookmarks when user changes
     useEffect(() => {
         refreshBookmarks();
-    }, [user]);
+        // refreshPosts();
+    }, []);
+    
 
     return (
         <GlobalContext.Provider
@@ -61,8 +65,13 @@ export const GlobalProvider = ({ children }) => {
                 user,
                 setUser,
                 bookmarks,
+                deleting,
+                setDeleting,
+                uploading,
+                setUploading,
                 isLoading,
-                refreshBookmarks, // Expose refresh function
+                refreshBookmarks, // Expose bookmark refresh function
+                // refreshPosts, // Expose posts refresh function
             }}
         >
             {children}

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
+import { View, FlatList, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import VideoCard from "../../components/VideoCard";
 import EmptyState from "../../components/EmptyState";
@@ -11,13 +11,13 @@ import { icons } from "../../constants";
 import { router } from "expo-router";
 
 const Profile = () => {
-  const { user, setUser, setIsLoggedIn } = useGlobalContext()
+  const { user, setUser, setIsLoggedIn, deleting, refreshBookmarks } = useGlobalContext()
   const { data: posts, refetch } = useAppwrite(() => getUserPosts(user?.$id));
 
   useEffect(() => {
-    // refreshBookmarks()
-    refetch()
-  }, [user])
+    refetch();
+    refreshBookmarks();
+  }, [deleting])
 
   const logout = async() => {
     await signOut()
@@ -26,10 +26,6 @@ const Profile = () => {
 
     router.replace('/sign-in')
   }
-
-  // useEffect(() => {
-  //   if(user === null && !isLoading && !isLoggedIn) router.replace('/sign-in')
-  // })
 
   return (
     <SafeAreaView className="bg-primary h-full max-w-[1240px] md:px-20">

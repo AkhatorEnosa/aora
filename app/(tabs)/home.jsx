@@ -1,5 +1,5 @@
 import { View, Text, FlatList, Image, RefreshControl } from 'react-native'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { images } from '../../constants'
@@ -10,13 +10,11 @@ import { getAllPosts, getLatestPosts } from '../../lib/appwrite.config'
 import useAppwrite from '../../lib/useAppwrite'
 import VideoCard from '../../components/VideoCard'
 import { useGlobalContext } from '../../context/GlobalProvider'
-import { router } from 'expo-router'
 
 const Home = () => {
   const { data: posts, refetch } = useAppwrite(getAllPosts)
   const { data: latestPosts, refetch: fetch } = useAppwrite(getLatestPosts)
-  const { user } = useGlobalContext()
-  // console.log("bookmarks", bookmarks)
+  const { user, deleting, uploading, refreshBookmarks } = useGlobalContext()
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -26,6 +24,12 @@ const Home = () => {
     await fetch();
     setRefreshing(false);
   };
+
+  useEffect(() => {
+    refetch();
+    fetch();
+    refreshBookmarks();
+  }, [deleting, uploading])
 
   // useEffect(() => {
   //   if(user === null && !isLoading && !isLoggedIn) router.replace('/sign-in')

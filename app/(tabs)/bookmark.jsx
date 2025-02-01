@@ -1,22 +1,12 @@
-import { useEffect } from "react";
-import { useLocalSearchParams } from "expo-router";
 import { View, Text, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useAppwrite from "../../lib/useAppwrite";
-import { getUserBookmarks, searchPosts } from "../../lib/appwrite.config";
 import VideoCard from "../../components/VideoCard";
 import SearchInput from "../../components/SearchInput";
 import EmptyState from "../../components/EmptyState";
 import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Bookmark = () => {
-  const { user, bookmarks, refreshBookmarks } = useGlobalContext()
-  // const { refetch } = useAppwrite(() => getUserBookmarks(user.$id));
-
-  useEffect(() => {
-    refreshBookmarks()
-    // refetch()
-  }, [])
+  const { user, bookmarks } = useGlobalContext()
 
   return (
     <SafeAreaView className="bg-primary h-full max-w-[1240px] md:px-20">
@@ -44,7 +34,7 @@ const Bookmark = () => {
               </Text>
 
               <View className="mt-6 mb-8">
-                <SearchInput  placeholder={"Search your saved videos"} />
+                <SearchInput  placeholder={"Search videos"} />
               </View>
             </View>
           </>

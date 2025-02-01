@@ -6,25 +6,21 @@ import FormField from '../../components/FormField'
 import CustomButton from '../../components/CustomButton'
 import { ResizeMode, Video } from 'expo-av'
 import * as DocumentPicker from "expo-document-picker";
-import { createVideoPost, getAllPosts } from '../../lib/appwrite.config'
+import { createVideoPost, getAllPosts, getLatestPosts } from '../../lib/appwrite.config'
 import { useGlobalContext } from '../../context/GlobalProvider'
 import { router } from 'expo-router'
 import useAppwrite from '../../lib/useAppwrite'
 
 const Create = () => {
-  const { user } = useGlobalContext()
   const { refetch } = useAppwrite(getAllPosts)
-  const [uploading, setUploading] = useState(false)
+  const { refetch: fetch } = useAppwrite(getLatestPosts)
+  const { user, refreshBookmarks, uploading, setUploading } = useGlobalContext()
   const [form, setForm] = useState({
     title: '',
     video: null,
     thumbnail: null,
     prompt: ''
   })
-
-  // useEffect(() => {
-  //   console.log(form)
-  // }, [form])
 
   const openPicker = async (selectType) => {
     const result = await DocumentPicker.getDocumentAsync({
@@ -55,7 +51,7 @@ const Create = () => {
     //   }, 100);
     // }
 
-    console.log(result)
+    // console.log(result)
   };
 
   const submit = async() => {
@@ -75,9 +71,13 @@ const Create = () => {
         userId: user.$id,
       });
 
+      // await refetch();
+      // await fetch();
+      // await refreshBookmarks();
+
       Alert.alert("Success", "Post uploaded successfully");
       router.push("/home");
-      refetch()
+      
     } catch (error) {
       Alert.alert("Error", error.message);
     } finally {
